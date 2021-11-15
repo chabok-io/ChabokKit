@@ -12,13 +12,13 @@ DESC
 
 s.requires_arc = true
 
-s.homepage     = 'https://github.com/chabok-io/chabok-client-ios'
+s.homepage     = 'https://github.com/chabok-io/chabok-ios'
 s.license =    { :type => 'proprietary', :text => <<-LICENSE
 Copyright 2021 - present Chabok. All rights reserved.
 LICENSE
 }
 s.author       = { 'Chabok.io' => 'info@chabok.io' }
-s.source = { :http => 'https://github.com/chabok-io/chabok-ios/releases/download/'+ s.version.to_s+'/ChabokFramework.zip' }
+s.source = { :http => 'https://github.com/chabok-io/chabok-ios/releases/download/'+ s.version.to_s+'/ChabokKit.zip' }
 
 s.platform = :ios
 s.ios.deployment_target = '9.0'
