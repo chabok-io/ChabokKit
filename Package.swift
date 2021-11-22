@@ -35,8 +35,7 @@ let package = Package(
         ),
         .binaryTarget(
             name: "RemoteBinaryPackage",
-            url: "https://github.com/chabok-io/chabok-ios/blob/main/ChabokKit.zip",
-            checksum: "ZIP archive."
+            url: "https://github.com/chabok-io/chabok-ios/tree/main/ChabokKit.xcframework"
         ),
         .binaryTarget(
             name: "LocalBinaryPackage",
