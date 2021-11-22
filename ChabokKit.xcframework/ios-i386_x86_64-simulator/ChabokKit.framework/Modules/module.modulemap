@@ -1,4 +1,0 @@
-framework module ChabokKit {
-  header "ChabokKit-Swift.h"
-  requires objc
-}
