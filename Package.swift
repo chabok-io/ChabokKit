@@ -18,28 +18,16 @@ let package = Package(
             name: "ChabokKit",
             targets: ["ChabokKit", "RemoteBinaryPackage", "LocalBinaryPackage"])
     ],
-    dependencies: [
-        .package(name: "Starscream",
-                 url: "https://github.com/daltoniam/Starscream.git",
-                 from: "4.0.4"),
-    ],
+    dependencies: [],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(
-            name: "ChabokKit",
-            exclude: ["README.md"],
-            resources: [
-                .copy("settings.plist")
-            ]
-        ),
+        
+        .target(name: "ChabokKit",
+                path: "https://github.com/chabok-io/chabok-ios/tree/main/ChabokKit.xcframework")
         .binaryTarget(
             name: "RemoteBinaryPackage",
             url: "https://github.com/chabok-io/chabok-ios/tree/main/ChabokKit.xcframework"
-        ),
-        .binaryTarget(
-            name: "LocalBinaryPackage",
-            path: "/Users/husseinhj/Documents/chabok/plus/projects/ios/chabok-ios/chabok-ios/Build/ChabokKit.xcframework"
         )
     ]
 )
