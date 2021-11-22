@@ -22,7 +22,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "ChabokKit",
-            url: "https://github.com/chabok-io/chabok-ios/tree/main/ChabokKit.xcframework",
+            url: "https://github.com/chabok-io/chabok-ios/tree/main/ChabokKit-xcframework.zip",
             checksum: "The checksum of the ZIP archive that contains the XCFramework."
         )
     ]
