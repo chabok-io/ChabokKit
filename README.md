@@ -1,11 +1,3 @@
-<p align="center"> 
-  <img src="https://github.com/chabok-io/chabok-assets/blob/master/sdk-logo/iOS.svg">
-</p>
-
-# Chabok Push for iOS
-[![Cocoa-pods](https://img.shields.io/cocoapods/v/ChabokKit.svg)](https://cocoapods.org/pods/ChabokKit) [![Cocoa-pods](https://img.shields.io/cocoapods/p/ChabokKit.svg)](https://cocoapods.org/pods/ChabokKit)
-
-
 # Chabok iOS library
 Blow some breath to your app with Chabok realtime messaging and receive push notifications cross any platform with zero code. Know your users's better, push them content based on their location or track their presence/location withoud headache.
 Chabok help mobile application marketers to optimize their acquisition campaigns and increase user engagement & retention.
@@ -22,13 +14,26 @@ Please visit [Issues](https://github.com/chabok-io/chabok-client-ios/issues).
 
 ## Getting Started
 
-These are the minimum required steps to integrate the Chabok SDK in your Android app. We assume that you are using Android Studio for your Android development. The minimum supported Android API level for the Chabok SDK integration is 16 (Jelly-bean).
+These are the minimum required steps to integrate the Chabok SDK in your IOS app.
 
 ### Installation
 
-<br/>
-<br/>
-<br/>
+Add the latest `ChabokKit` version to your project's Podfile.
+
+```
+target 'YourProject' do
+  use_frameworks!
+
+  pod 'ChabokKit', '~> 0.9.0'
+  
+end
+```
+
+Open your project's root folder in your terminal and run:
+
+```
+$ pod install --repo-update
+```
 
 
 ### Initialization
@@ -265,22 +270,22 @@ This data will allow you to personalize campaigns.
 For tracking an `event` the process is as follows:
  
 - Create a new event in your dashboard.
-- Copy the ID and use it in `setEvent` method.
+- Copy the ID and use it in `sendEvent` method.
   
   <br/>
 
-To set an analytics event use `setEvent` method:
+To set an analytics event use `sendEvent` method:
 
 >`Note:` Passing attributes to `event`'s method is optional.
 
 ```swift
 //Swift
-Chabok.analytics().setEvent(id: "ID", body: Dictionary<String,Any>)
+Chabok.analytics().sendEvent(id: "ID", body: Dictionary<String,Any>)
 ```
 
 ```objectivec
 //Objective-C
-[Chabok.analytics setEventWithId:@"ID" body: NSDictionary<NSString *,id>];
+[Chabok.analytics sendEventWithId:@"ID" body: NSDictionary<NSString *,id>];
 ```
 
 ##### Example
@@ -289,7 +294,7 @@ For example we want to track add to cart event.
 
 - Create add-to-cart event in your dashboard.
 - Create your event attributes.
-- Then pass the attributes with the given ID to the `setEvent` method.
+- Then pass the attributes with the given ID to the `sendEvent` method.
 
 ```swift
 //Swift
@@ -305,7 +310,7 @@ let body: [String : Any] = [
 	"discount_percent": 15
 ]
         
-Chabok.analytics().setEvent(id: "ID", body: body)
+Chabok.analytics().sendEvent(id: "ID", body: body)
 ```
 
 ```objectivec
@@ -322,14 +327,14 @@ NSDictionary *body = @{
 	@"discount_percent":@15        
 };
         
-[Chabok.analytics setEventWithId:@"ID" body:body];
+[Chabok.analytics sendEventWithId:@"ID" body:body];
 ```
 
 Set `event` method with callback:
 
 ```swift
 //Swift
-Chabok.analytics().setEvent(id: "ID", body: Dictionary<String,Any>) {
+Chabok.analytics().sendEvent(id: "ID", body: Dictionary<String,Any>) {
     (success:Bool,message:String) in
     if (success) {
         NSLog("User's event has been successfully set.")
@@ -341,7 +346,7 @@ Chabok.analytics().setEvent(id: "ID", body: Dictionary<String,Any>) {
 
 ```objectivec
 //Objective-C
-[Chabok.analytics setEventWithId:@"ID" body: NSDictionary<NSString *,id> callback:^(BOOL success,NSString* message) {
+[Chabok.analytics sendEventWithId:@"ID" body: NSDictionary<NSString *,id> callback:^(BOOL success,NSString* message) {
     if (success) {
         NSLog(@"User's event has been successfully set.");
     } else {
@@ -438,9 +443,9 @@ let profile:Profile = Profile.Builder()
         .mobile("MOBILE") //e.g. 989100360500
         .name("NAME") //e.g. Hossein
         .family("FAMILY") //e.g. Shooshtari
-        .birthDate("BIRTH_DATE") //e.g. 29-02-1372
+        .birthDate("BIRTH_DATE") //e.g. 1993-05-19
         .gender(GENDER) //e.g. Gender.MALE
-        .timeZone("TIME_ZONE") //e.g. +3:30
+        .timeZone("TIME_ZONE") //e.g. -270(Convert +4:30 to minute then multiply in -1)
         .build()
 
 Chabok.user().setProfile(profile: profile)
@@ -453,8 +458,8 @@ ProfileBuilder *profile = [ProfileBuilder new];
     [profile mobile:@"MOBILE"]; //e.g. 989100360500
     [profile name:@"NAME"]; //e.g. Hossein
     [profile family:@"FAMILY"]; //e.g. Shooshtari
-    [profile birthDate:@"BIRTH_DATE"]; //e.g. 29-02-1372
-    [profile timeZone:@"TIME_ZONE"]; //e.g. +3:30
+    [profile birthDate:@"BIRTH_DATE"]; //e.g. 1993-05-19
+    [profile timeZone:@"TIME_ZONE"]; //e.g. -270(Convert +4:30 to minute then multiply in -1)
     [profile gender: GENDER]; //e.g. GenderMALE
     
 [Chabok.user setProfileWithProfile: profile.build];
