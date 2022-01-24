@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 s.name         = 'ChabokKit'
 s.module_name  = 'ChabokKit'
-s.version      = '0.11.3'
+s.version      = '0.11.4'
 s.summary      = 'BOOST YOUR BUSINESS WITH A STRONG CUSTOMER DATA PLATFORM'
 s.description  = <<-DESC
 Chabok simplifies marketing strategies from acquisition to churn by providing an attribution system,user journey, personalized engine, real-time segmentation, and cross-channel engagement.
