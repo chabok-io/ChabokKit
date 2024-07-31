@@ -6,10 +6,10 @@ Chabok help mobile application marketers to optimize their acquisition campaigns
 For installation refer to [iOS docs](https://doc.chabok.io/ios/introducing.html) and platform specific parts (iOS).
 
 ## Release Note
-You can find release note [here](https://doc.chabok.io/ios/release-note.html).
+You can find release note [here](https://doc.chabok.io/chabok-ios/release-note.html).
 
 ## Support
-Please visit [Issues](https://github.com/chabok-io/chabok-client-ios/issues).
+Please visit [Issues](https://github.com/chabok-io/chabok-ios/issues).
 
 
 ## Getting Started
@@ -18,13 +18,13 @@ These are the minimum required steps to integrate the Chabok SDK in your IOS app
 
 ### Installation
 
-Add the latest `ChabokKit` version to your project's Podfile.
+Add the latest `ChabokSDK` version to your project's Podfile.
 
 ```
 target 'YourProject' do
   use_frameworks!
 
-  pod 'ChabokKit', '~> 0.9.0'
+  pod 'ChabokSDK', '~> 1.0.3'
   
 end
 ```
@@ -35,6 +35,83 @@ Open your project's root folder in your terminal and run:
 $ pod install --repo-update
 ```
 
+### Setup
+
+##### 1. Add Capabilities
+This step enables your project to receive remote/push notifications.
+
+Select the root project > your main app target > Signing & Capabilities.
+
+To enable Push Notifications, click + Capability and add it.
+
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-1.png)
+
+Again, click on + Capability and add Background Modes. Check Remote notifications next.
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-2.png)
+
+##### 2. Add Notification Service Extension
+By adding the ChabokNotificationServiceExtension to your iOS application, you can receive rich notifications with images, buttons, and badges. It's also required for Chabok's Confirmed Delivery analytics features.
+
+In Xcode Select File > New > Target...
+
+Select Notification Service Extension then Next.
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-3.png)
+
+Enter the product name as ChabokNotificationServiceExtension and press Finish.
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-4.png)
+
+Do not activate the scheme on the dialog that is shown after selecting "Finish".
+
+Press Cancel on the Activate scheme prompt.
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-5.png)
+
+By canceling, you keep Xcode debugging your app instead of the extension you just created. If you activated by accident, you can switch back to debug your app target (middle-top next to the device selector).
+
+Select the ChabokNotificationServiceExtension target and General settings.
+
+Set Minimum Deployments to be the same value as your Main Application Target. This should be iOS 11 or higher.
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-6.png)
+
+Set the ChabokNotificationServiceExtension Target Minimum Deployments value to be the same as your Main Application Target.
+
+##### 3. Add App Groups
+App Groups allow your app and the ChabokNotificationServiceExtension to communicate when a notification is received, even if your app is not active. This is required for badges and Confirmed Deliveries.
+
+Select your Main App Target > Signing & Capabilities > + Capability > App Groups.
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-7.png)
+
+Within App Groups, click the + button.
+
+Set the App Groups container to be group.YOUR_BUNDLE_IDENTIFIER.Chabok where YOUR_BUNDLE_IDENTIFIER is the same as your Main Application "Bundle Identifier".
+
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-8.png)
+
+Press OK and repeat for the ChabokNotificationServiceExtension Target.
+
+Select the ChabokNotificationServiceExtension Target > Signing & Capabilities > + Capability > App Groups.
+
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-9.png)
+
+
+Within App Groups, click the + button.
+
+Set the App Groups container to be group.YOUR_BUNDLE_IDENTIFIER.Chabok where YOUR_BUNDLE_IDENTIFIER is the same as your Main Application "Bundle Identifier".
+
+DO NOT INCLUDE ChabokNotificationServiceExtension.
+
+
+![image](https://github.com/smooke/chabok-v2-docs/blob/main/images/ios/ios-doc-image-10.png)
+
+Do not include ChabokNotificationServiceExtension
 
 ### Initialization
 
@@ -44,17 +121,17 @@ Initialize Chabok SDK in your `AppDelegate` file:
 
 ```swift
 //Swift
-import ChabokKit
+import ChabokSDK
 
  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-    Chabok.initialize(clientId: "CLIENT_ID", clientSecret: "CLIENT_SECRET") {
-        (success:Bool,message:String) in
-        if (success) {
-            NSLog("Successfully initialized.")
-        } else {
-            NSLog("%@", message)
-        }
+ 
+  	Chabok.initialize(appId: "APP_ID", secret: "SECRET") {
+          (success,message) in
+           if(success) {
+             	NSLog("Successfully initialized.")
+           } else {
+             NSLog("%@", message)
+           }
     }
 
     return true
@@ -66,12 +143,8 @@ import ChabokKit
 
 - (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
 	
-    [Chabok initializeWithClientId:@"CLIENT_ID" clientSecret:@"CLIENT_SECRET" callback:^(BOOL success,NSString* message) {
-        if (success) {
-            NSLog(@"Successfully initialized.");
-        } else {
-            NSLog(@"%@", message);
-        }
+    [Chabok initializeWithAppId:@"APP_ID" secret:@"SECRET" callback:^(BOOL success,NSString* message) {
+        if (success){} else {}
     }];
 
     return YES;
@@ -79,42 +152,15 @@ import ChabokKit
 
 ```
 
-> `Note:` The application credentials (`CLIENT_ID` and `CLIENT_SECRET`) are available in your dashboard space under app info.
+> `Note:` The application credentials (`APP_ID` and `SECRET`) are available in your dashboard space under app info.
 
-Place your `CLIENT_ID` and `CLIENT_SECRET` from your dashboard into the initialize method.
-
+Place your `APP_ID` and `SECRET` from your dashboard into the initialize method.
 
 ## Usage
 
-&#32;
-#### Set default tracker:
-
-You can still understand the installation source in your campaign even if the stores do not support Referrer. The process is as follows:
-
-- Create **new tracker** in your dashboard.
-- Enter the **tracker ID** in the following method.
-
-```swift
-//Swift
-Chabok.setDefaultTracker(id: "DEFAULT_TRACKER")
-```
-
-```objectivec
-//Objective-C
-[Chabok setDefaultTrackerWithId:@"DEFAULT_TRACKER"];
-```
-
-After getting the apk output, upload it to your desired store.
-
-> `Note:` Default tracker should be called before `Chabok.initialize()`.
-
-&#32;
-
-<br/>
-
 #### User
 
-Chabok `USER_ID` is a unique ID that can be assigned to each user to identify him/her.
+Chabok `USERNAME` is a unique ID that can be assigned to each user to identify him/her.
 For example, a unique ID could be a generated UUID, a mobile number, etc.
 
 Ideally, you should assign the unique ID to users when signing up, logging in, or on pages where their identity is known.
@@ -129,54 +175,58 @@ When a user logs in, all the stored information is associated with the identifie
 
 To login user in the Chabok service use `login` method:
 
-```swift
-//Swift
-Chabok.user().login(userId: "USER_ID")
-```
+```objective-c
+//objective-c
 
-```objectivec
-//Objective-C
-[Chabok.user loginWithUserId:@"USER_ID"];
+[Chabok.user loginWithUsername:@"USERNAME"];
+```
+```Swift
+//Swift
+
+Chabok.user().login("USERNAME")
 ```
 
 `login` method with callback:
 
-```swift
-//Swift
-Chabok.user().login(userId: "USER_ID") {
-    (success:Bool,message:String) in
-    if (success) {
-        NSLog("User successfully logged in.")
-    } else {
-        NSLog("%@", message)
-    }
-}
+```objective-c
+//objective-c
+
+ [Chabok.user loginWithUsername:@"USERNAME" callback:^(BOOL success,NSString* message) {
+        if (success) {
+            NSLog(@"Successfully initialized.");
+        } else {
+            NSLog(@"%@", message);
+        }
+    }];
 
 ```
+```Swift
+//Swift
 
-```objectivec
-//Objective-C
-[Chabok.user loginWithUserId:@"USER_ID" callback:^(BOOL success,NSString* message) {
-    if (success) {
-        NSLog(@"User successfully logged in.");
-    } else {
-        NSLog(@"%@", message);
-    }
-}];
+Chabok.user().login("USERNAME", object : Callback {  
+    override fun onResponse(success: Boolean, message: String?) {  
+        if (success){  
+            print("User has successfully logged in")  
+        } else {  
+            print("$message")  
+        }  
+    }  
+})
 ```
 
 ##### Example
 
 When verifying user OTP codes, we should login to the Chabok platform to identify user by user ID
 
-```swift
-//Swift
-Chabok.user().login(userId: "989100360500")
-```
+```objective-c
+//objective-c
 
-```objectivec
-//Objective-C
-[Chabok.user loginWithUserId:@"989100360500"];
+Chabok.user().login("989100360500");
+```
+```Swift
+//Swift
+
+Chabok.user().login("989100360500");
 ```
 
 <br/>
@@ -188,39 +238,40 @@ When the user logs out of your app, call the Chabok Logout method to avoid attac
 
 `logout` method can be used to log out a user from Chabok:
 
-```swift
-//Swift
-Chabok.user().logout()
-```
-
-```objectivec
-//Objective-C
+```objective-c
+//objective-c
 [Chabok.user logout];
+```
+```Swift
+//Swift
+
+Chabok.user().logout()
 ```
 
 `logout` method with callback:
 
-```swift
-//Swift
-Chabok.user().logout() {
-    (success:Bool,message:String) in
-    if (success) {
-        NSLog("User successfully logged out.")
-    } else {
-        NSLog("%@", message)
-    }
-}
-```
-
-```objectivec
-//Objective-C
+```objective-c
+//objective-c    
 [Chabok.user logoutWithCallback:^(BOOL success,NSString* message) {
     if (success) {
-        NSLog(@"User successfully logged out.");
+        NSLog(@"Successfully Logged in.");
     } else {
         NSLog(@"%@", message);
     }
 }];
+```
+```Swift
+//Swift
+
+Chabok.user().logout(object : Callback {  
+    override fun onResponse(success: Boolean, message: String?) {  
+	    if (success){  
+            print("User has successfully logged out")  
+        } else {  
+            print("$message")  
+        } 
+    }  
+})
 ```
 
 
@@ -228,361 +279,368 @@ Chabok.user().logout() {
 
 To check a user is logged in Chabok you can use the following method.
 
-```swift
-//Swift
-Chabok.user().isLoggedIn()
-```
+```objective-c
+//objective-c
 
-```objectivec
-//Objective-C
-Chabok.user.isLoggedIn
+Chabok.user().isLoggedIn();
+```
+```Swift
+//Swift
+
+Chabok.user().isLoggedIn();
 ```
 
 > `Tip:` In case you have implemented Chabok in your application, you can use the following method to check and login users who have already logged into your system but not into Chabok.
 
 
-```swift
+```objective-c
+//objective-c
+
+if (!Chabok.user().isLoggedIn()) {
+   Chabok.user().login("USER_ID");
+}
+```
+```Swift
 //Swift
 
-if(!Chabok.user().isLoggedIn()) {
-	Chabok.user().login(userId: "USER_ID")
+if (!Chabok.user().isLoggedIn()) {
+   Chabok.user().login("USER_ID")
 }
 ```
 
-```objectivec
-//Objective-C
+#### Tag
 
-if(!Chabok.user.isLoggedIn) {
-	[Chabok.user loginWithUserId:@"989100360500"];        
-}
+To set user tag in the Chabok service use `setUserTag` method:
 
+```objective-c
+//objective-c
+
+[Chabok.user setTagWithTag:@"TAG"];
 ```
 
-<br/>
-
-### Analytics
-
-#### Event
-
-The events feature allows you to track any other user interactions that are vital to your business. Additionally, each custom event can have attributes such as amount, quantity, price, category, etc.
-This data will allow you to personalize campaigns.
-
-For tracking an `event` the process is as follows:
- 
-- Create a new event in your dashboard.
-- Copy the ID and use it in `sendEvent` method.
-  
-  <br/>
-
-To set an analytics event use `sendEvent` method:
-
->`Note:` Passing attributes to `event`'s method is optional.
-
-```swift
+```Swift
 //Swift
-Chabok.analytics().sendEvent(id: "ID", body: Dictionary<String,Any>)
+
+Chabok.user().setUserTag("TAG")
 ```
 
-```objectivec
-//Objective-C
-[Chabok.analytics sendEventWithId:@"ID" body: NSDictionary<NSString *,id>];
+To set array of tags in the Chabok service use `setUserTags` method:
+
+```objective-c
+//objective-c
+
+[Chabok.user setTagsWithTags: NSArray<NSString *> *tags];
+```
+
+```Swift
+//Swift
+
+Chabok.user().setUserTags(Array<String>)
 ```
 
 ##### Example
 
-For example we want to track add to cart event.
+```objective-c
+//objective-c
 
-- Create add-to-cart event in your dashboard.
-- Create your event attributes.
-- Then pass the attributes with the given ID to the `sendEvent` method.
-
-```swift
+Chabok.user().setUserTag("VIP");
+```
+```Swift
 //Swift
-let body: [String : Any] = [
-	"product_id": "123456",
-	"name": "T-shirt",
-	"quantity": 10,
-	"category": "Clothes",
-	"price": 100.25,
-	"currency": "USD",
-	"chosen_colors": ["Black", "Blue", "White"],
-	"discounted": true,
-	"discount_percent": 15
-]
-        
-Chabok.analytics().sendEvent(id: "ID", body: body)
+
+Chabok.user().setUserTag("VIP")
 ```
 
-```objectivec
-//Objective-C
-NSDictionary *body = @{
-	@"product_id": @"123456",
-	@"name": @"T-shirt",
-	@"quantity": @10,
-	@"category": @"Clothes",
-	@"price": @100.25,
-	@"currency": @"USD",
-	@"chosen_colors": @[@"Black", @"Blue", @"White"],
-	@"discounted": @YES,
-	@"discount_percent":@15        
-};
-        
-[Chabok.analytics sendEventWithId:@"ID" body:body];
-```
+<br/>
 
-Set `event` method with callback:
+Set user's tag method with callback:
 
-```swift
-//Swift
-Chabok.analytics().sendEvent(id: "ID", body: Dictionary<String,Any>) {
-    (success:Bool,message:String) in
+```objective-c
+//objective-c
+    
+[Chabok.user setTagWithTag:@"TAG" callback:^(BOOL success,NSString* message) {
     if (success) {
-        NSLog("User's event has been successfully set.")
-    } else {
-        NSLog("%@", message)
-    }
-}
-```
-
-```objectivec
-//Objective-C
-[Chabok.analytics sendEventWithId:@"ID" body: NSDictionary<NSString *,id> callback:^(BOOL success,NSString* message) {
-    if (success) {
-        NSLog(@"User's event has been successfully set.");
+        NSLog(@"Successfully Done.");
     } else {
         NSLog(@"%@", message);
     }
 }];
 ```
+```Swift
+//Swift
+
+Chabok.user().setUserTag("TAG", object : Callback {  
+    override fun onResponse(success: Boolean, message: String?) {  
+          
+    }  
+})
+```
+
+To unset user tag in the Chabok service use `unsetUserTag` method:
+
+```objective-c
+//objective-c
+
+[Chabok.user unsetUserTag:@"TAG"];
+```
+
+```Swift
+//Swift
+
+Chabok.user().unsetUserTag("TAG")
+```
+
+To unset array of tags in the Chabok service use `unsetUserTags` method:
+
+```objective-c
+//objective-c
+
+[Chabok.user setTagsWithTags: NSArray<NSString *> *tags];
+```
+
+```Swift
+//Swift
+
+Chabok.user().unsetUserTags(Array<String>)
+```
+
+##### Example
+
+```objective-c
+//objective-c
+
+[Chabok.user unsetUserTag:@"VIP"];
+```
+```Swift
+//Swift
+
+Chabok.user().unsetUserTag("VIP")
+```
+
+<br/>
+
+Unset user's tag method with callback:
+
+```objective-c
+//objective-c
+
+[Chabok.user unsetTagWithTag:@"TAG" callback:^(BOOL success,NSString* message) {
+    if (success) {
+        NSLog(@"Successfully Done.");
+    } else {
+        NSLog(@"%@", message);
+    }
+}];
+```
+```Swift
+//Swift
+
+Chabok.user().unsetUserTag("TAG", object : Callback {
+    override fun onResponse(success: Boolean, message: String?) {
+
+    }
+})
+```
+
 
 #### Attributes
 
 The user attributes you collect can give you a comprehensive picture of who your users are, where they're from, what they do, and a whole lot more, depending on your business. An attribute is something like favorites, user preferences, or etc. You can segment users based on their contextual relevance and personalize marketing campaigns sent through all channels of engagement with such granular user data.
 
-To set user attributes in the Chabok service use `setAttribute` method:
+To set user attributes in the Chabok service use `setUserAttribute` method:
 
-```swift
-//Swift
-Chabok.user().setAttribute(attributes: Dictionary<String,Any>);
+```objective-c
+//objective-c
+
+[Chabok.user setAttributeWithKey:@"KEY" value:@"VALUE"];
 ```
+```Swift
+//Swift
 
-```objectivec
-//Objective-C
-[Chabok.user setAttributeWithAttributes: NSDictionary<NSString *,id>];
+Chabok.user().setUserAttribute("KEY","VALUE")
 ```
 
 ##### Example
 
-For example we want to store attributes of a stock trader.
+```objective-c
+//objective-c
 
-```swift
+[Chabok.user setAttributeWithKey:@"City" value:@"Karaj"];
+```
+```Swift
 //Swift
-let userAttribute: [String : Any] = [
-	"trades_everyday": true,
-	"favorite_Stocks": ["Tesla","Facebook"],
-	"is_vip": true,
-	"first_trade_date": "18-9-2020",
-	"last_trade_date": "5-8-2021",
-	"has_inviter": true,
-	"inviter_id": "smooke9"
-]
-        
-Chabok.user().setAttribute(attributes: userAttribute)
+
+Chabok.user().setUserAttribute("City","Karaj")
 ```
 
-```objectivec
-//Objective-C
-NSDictionary *userAttribute = @{
-	@"trades_everyday": @YES,
-	@"favorite_Stocks": @[@"Tesla",@"Facebook"],
-	@"is_vip": @YES,
-	@"first_trade_date": @"18-9-2020",
-	@"last_trade_date": @"5-8-2021",
-	@"has_inviter": @YES,
-	@"inviter_id": @"smooke9"       
-};
-    
-[Chabok.user setAttributeWithAttributes:userAttribute];
-```
+<br/>
 
 Set user's attributes method with callback:
 
-```swift
+```objective-c
+//objective-c
+
+[Chabok.user setAttributeWithKey:@"KEY" value:@"VALUE" callback:^(BOOL success,NSString* message) {
+        if (success) {
+            NSLog(@"Successfully Done.");
+        } else {
+            NSLog(@"%@", message);
+        }
+    }];
+```
+```Swift
 //Swift
-Chabok.user().setAttribute(attributes: Dictionary<String,Any>) {
-    (success:Bool,message:String) in
-    if (success) {
-        NSLog("User's attribute has been successfully set.")
-    } else {
-        NSLog("%@", message)
-    }
-}
+
+Chabok.user().setUserAttribute("KEY","VALUE", object : Callback {  
+    override fun onResponse(success: Boolean, message: String?) {  
+          
+    }  
+})
 ```
 
-```objectivec
-//Objective-C
-[Chabok.user setAttributeWithAttributes: NSDictionary<NSString *,id> callback:^(BOOL success,NSString* message) {
-    if (success) {
-        NSLog(@"User's attribute has been successfully set.");
-    } else {
-        NSLog(@"%@", message);
-    }
-}];
+To unset user attributes in the Chabok service use `unsetUserAttribute` method:
+
+```objective-c
+//objective-c
+
+[Chabok.user unsetAttributeWithKey:@"KEY"];
+```
+```Swift
+//Swift
+
+Chabok.user().unsetUserAttribute("KEY")
 ```
 
+##### Example
+
+```objective-c
+//objective-c
+
+[Chabok.user unsetAttributeWithKey:@"City"];
+```
+```Swift
+//Swift
+
+Chabok.user().unsetUserAttribute("City")
+```
+
+<br/>
+
+Unset user's attributes method with callback:
+
+```objective-c
+//objective-c
+
+[Chabok.user unsetAttributeWithKey:@"KEY" callback:^(BOOL success,NSString* message) {
+        if (success) {
+            NSLog(@"Successfully Done.");
+        } else {
+            NSLog(@"%@", message);
+        }
+    }];
+```
+```Swift
+//Swift
+
+Chabok.user().unsetUserAttribute("KEY", object : Callback {
+    override fun onResponse(success: Boolean, message: String?) {
+
+    }
+})
+```
 
 #### Profile
 Use the `setProfile` method to enter user information such as first name, last name, gender, etc.
 
 To set user's profile information in the Chabok service use `setProfile` method:
 
-```swift
-//Swift
-let profile:Profile = Profile.Builder()
-        .email("EMAIL") //e.g. dev.chabok@gmail.com
-        .mobile("MOBILE") //e.g. 989100360500
-        .name("NAME") //e.g. Hossein
-        .family("FAMILY") //e.g. Shooshtari
-        .birthDate("BIRTH_DATE") //e.g. 1993-05-19
-        .gender(GENDER) //e.g. Gender.MALE
-        .timeZone("TIME_ZONE") //e.g. -270(Convert +4:30 to minute then multiply in -1)
-        .build()
+```objective-c
+//objective-c
 
-Chabok.user().setProfile(profile: profile)
-```
-
-```objectivec
-//Objective-C
 ProfileBuilder *profile = [ProfileBuilder new];
-    [profile email:@"EMAIL"]; //e.g. dev.chabok@gmail.com
-    [profile mobile:@"MOBILE"]; //e.g. 989100360500
-    [profile name:@"NAME"]; //e.g. Hossein
-    [profile family:@"FAMILY"]; //e.g. Shooshtari
-    [profile birthDate:@"BIRTH_DATE"]; //e.g. 1993-05-19
-    [profile timeZone:@"TIME_ZONE"]; //e.g. -270(Convert +4:30 to minute then multiply in -1)
-    [profile gender: GENDER]; //e.g. GenderMALE
+    [profile email:@"EMAIL"];
+    [profile phoneNumber:@"FIRSTNAME"]; //e.g. 989100360500
+    [profile firstName:@"FIRSTNAME"]; //e.g. Hossein
+    [profile lastName:@"LASTNAME"]; //e.g. Shooshtari
+    [profile birthDate:@"BIRTH_DATE"]; //e.g. (timestamp) 3131231232 
+    [profile gender: GENDER]; //e.g. Gender.MALE
     
-[Chabok.user setProfileWithProfile: profile.build];
+[[Chabok user]setProfileWithProfile: profile.build];
 ```
+```Swift
+//Swift
+
+val profile: Profile = Profile.Builder()
+    .email("EMAIL") //e.g. dev.chabok@gmail.com  
+    .phoneNumber("PHONE_NUMBER") //e.g. 989100360500  
+    .firstName("FIRSTNAME") //e.g. Hossein  
+    .lastName("LASTNAME") //e.g. Shooshtari  
+    .birthDate("BIRTH_DATE") //e.g. (timestamp) 3131231232  
+    .gender(Gender.MALE) //e.g. Gender.MALE  
+    .build()
+
+Chabok.user().setProfile(profile)
+```
+
 <br/>
 
 Set user's `profile` information method with callback:
 
-```swift
+```objective-c
+//objective-c
+
+[[Chabok user]setProfileWithProfile: profile.build callback:^(BOOL success,NSString* message) {
+        if (success){} else {}
+    }];
+```
+```Swift
 //Swift
-Chabok.user().setProfile(profile: profile) {
-    (success:Bool,message:String) in
-    if (success) {
-        NSLog("User's profile updated successfully.")
-    } else {
-        NSLog("%@", message)
+
+Chabok.user().setProfile(profile, object : Callback {
+    override fun onResponse(success: Boolean, message: String?) {
+
     }
-}
+})
 ```
 
-```objectivec
-//Objective-C
-[Chabok.user setProfileWithProfile: profile callback:^(BOOL success,NSString* message) {
-    if (success) {
-        NSLog(@"User's profile updated successfully.");
-    } else {
-        NSLog(@"%@", message);
-    }
-}];
+### Notification features
+
+
+&#32;
+#### Get passed data in notification payload.
+
+```objective-c
+//objective-c
+
+[Chabok.message addNotificationHandlerWithPassData:^(NSDictionary* data) {
+        NSLog(@"~~~~~ Chabok received data ~~~~~> %@", data);
+    }];
 ```
-
-
-#### Location
-Use the `setLocation` method to enter user's location.
-
-To set user's `location` use `setLocation` method:
-
-```swift
+```Swift
 //Swift
-Chabok.user().setLocation(latitude: LATITUDE, longitude: LONGITUDE)
 
-```
-
-```objectivec
-//Objective-C
-[Chabok.user setLocationWithLatitude: LATITUDE longitude: LONGITUDE];
-```
-
-<br/>
-
-Set user's `location` information method with callback:
-
-
-```swift
-//Swift
-Chabok.user().setLocation(latitude: LATITUDE, longitude: LONGITUDE) {
-    (success:Bool,message:String) in
-    if (success) {
-        NSLog("User's location updated successfully.")
-    } else {
-        NSLog("%@", message)
+Chabok.message().addNotificationHandler(object: NotificationHandler() {
+    override fun notificationData(data: JSONObject) {
+        super.notificationData(data)
     }
-}
+})
 ```
 
-```objectivec
-//Objective-C
-[Chabok.user setLocationWithLatitude: LATITUDE longitude: LONGITUDE callback:^(BOOL success,NSString* message) {
-    if (success) {
-        NSLog(@"User's location updated successfully.");
-    } else {
-        NSLog(@"%@", message);
-    }
-}];
+#### Send notification permission status:
+
+```objective-c
+Chabok.message().setNotificationPermissionStatus(false);
 ```
 
-### Push ID (campaign & uninstall tracking)
+#### Send Chabok intents to SDK:
 
-Push tokens are used for User engagement (Push Notification Campagin and User Journey) and client callbacks; they are also required for **uninstall** and **reinstall** tracking.
+To get the push notification delivery report for Android 12 devices, call the following method:
 
-To set user `push id` in the Chabok service use `PushId` method:
+> `Note:` Methode should be called in `onCreate` and `onNewIntent`.
 
-```swift
-//Swift
-Chabok.user().setPushId(id: "PUSH_ID")
-
+```objective-c
+Chabok.message().passIntent(intent);
 ```
-
-```objectivec
-//Objective-C
-[Chabok.user setPushIdWithId:@"PUSH_ID"];
-```
-
-
-Set user `PUSH_ID` method with callback:
-
-```swift
-//Swift
-Chabok.user().setPushId(id: "PUSH_ID") {
-    (success:Bool,message:String) in
-    if (success) {
-        NSLog("User's push id has been successfully set.")
-    } else {
-        NSLog("%@", message)
-    }
-}
-
-```
-
-```objectivec
-//Objective-C
-[Chabok.user setPushIdWithId:@"PUSH_ID" callback:^(BOOL success,NSString* message) {
-    if (success) {
-        NSLog(@"User's push id has been successfully set.");
-    } else {
-        NSLog(@"%@", message);
-    }
-}];
-```
-
-<br/>
-<br/>
-
 
 ### Debugging features
 
